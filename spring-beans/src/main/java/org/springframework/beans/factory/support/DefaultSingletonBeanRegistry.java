@@ -161,6 +161,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	@Override
 	@Nullable
 	public Object getSingleton(String beanName) {
+		/**
+		 * allowEarlyReference： 是否应该创建早期引用，这里是true
+ 		 */
 		return getSingleton(beanName, true);
 	}
 
@@ -174,11 +177,34 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 */
 	@Nullable
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
+		/**
+		 * 从singletonObjects获取bean
+		 * 如果是在容器初始化完成之后，就是在map中获取一个bean
+		 * 第一次进来的时候singletonObjects会是null
+ 		 */
 		Object singletonObject = this.singletonObjects.get(beanName);
+		/**
+		 * 	从singletonObjects获取bean为空，并且判断是不是正在创建的bean
+		 * 	第一次进来的时候是false，所以会返回null，因为isSingletonCurrentlyInCreation是在第二次调用getSingleton方法时标记这个bean为正在创建中
+ 		 */
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
 			synchronized (this.singletonObjects) {
+				/**
+				 *  获取一个bean第二次进来此方法，首先从第三个map中获取对象，但是获取不到，然后从第二个map中获取
+				 	earlySingletonObjects：存放的临时对象(没有完整springBean生命周期的对象)
+				 */
 				singletonObject = this.earlySingletonObjects.get(beanName);
+				/**
+				 * 从第三个map中获取对象，获取不到，再看是否允许循环引用
+				 */
 				if (singletonObject == null && allowEarlyReference) {
+					/**
+					 * 从第二个map中获取一个单例工厂对象，单例工厂对象中存了我们要获取的对象
+					 * 这个工厂是为了改变这个对象的，比如aop就是通过这个对象工厂把一个bean变成一个代理对象的，
+					 * 就可以从第二个对象中拿到代理对象，再放到第三个对象中，大部分情况是不需要改变这个对象的。
+					 * 然后把这个对象放到第三个map中，从第二个map中移除这个对象工厂
+					 * 这里的情况是b引用a，然后a去getBean的情况，试想一下如果还有c需要引用a，那么就不需要从第二个map中拿了，可以从第三个map中拿
+					 */
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
 						singletonObject = singletonFactory.getObject();
@@ -202,6 +228,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 		Assert.notNull(beanName, "Bean name must not be null");
 		synchronized (this.singletonObjects) {
+			/**
+			 * 此时的场景是对象A第一次调用这个方法，那么肯定为null
+			 */
 			Object singletonObject = this.singletonObjects.get(beanName);
 			if (singletonObject == null) {
 				if (this.singletonsCurrentlyInDestruction) {
@@ -212,6 +241,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				if (logger.isDebugEnabled()) {
 					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
 				}
+				/**
+				 * 将这个对象设置到Set<String> singletonsCurrentlyInCreation集合中
+				 * 表示正在创建的bean
+				 */
 				beforeSingletonCreation(beanName);
 				boolean newSingleton = false;
 				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
@@ -219,6 +252,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					this.suppressedExceptions = new LinkedHashSet<>();
 				}
 				try {
+					/**
+					 * 创建bean的入口
+					 *
+					 */
 					singletonObject = singletonFactory.getObject();
 					newSingleton = true;
 				}

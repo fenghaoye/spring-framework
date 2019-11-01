@@ -5,12 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
-	//注入 indexService
+public class IndexService {
+	//注入userService
 	@Autowired
-	IndexService indexService;
+	UserService userService;
+
 	//构造方法
-	public UserService(){
-		System.out.println("user init");
+	public IndexService(){
+		System.out.println("index init");
 	}
 }
