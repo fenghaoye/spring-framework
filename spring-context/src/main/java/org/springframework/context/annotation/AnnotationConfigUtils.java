@@ -161,9 +161,10 @@ public abstract class AnnotationConfigUtils {
 
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 
-		/*
-		 	注册org.springframework.context.annotation.internalConfigurationAnnotationProcessor到beanFactory中
-		 	该后置处理器用来处理配置类
+		/**
+		 * 注册ConfigurationClassPostProcessor到beanFactory中
+		 * 名字叫org.springframework.context.annotation.internalConfigurationAnnotationProcessor
+		 * 该后置处理器用来解析配置类
 		 */
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
@@ -171,9 +172,10 @@ public abstract class AnnotationConfigUtils {
 			beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
 
-		/*
-		 	注册org.springframework.context.annotation.internalAutowiredAnnotationProcessor到beanFactory中
-		 	该后置处理器用来处理@Autowired注解
+		/**
+		 * 注册到AutowiredAnnotationBeanPostProcessor到beanFactory中
+		 * 名字叫org.springframework.context.annotation.internalAutowiredAnnotationProcessor
+		 * 该后置处理器用来处理@Autowired注解
 		 */
 		if (!registry.containsBeanDefinition(AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
@@ -182,9 +184,10 @@ public abstract class AnnotationConfigUtils {
 		}
 
 		// Check for JSR-250 support, and if present add the CommonAnnotationBeanPostProcessor.
-		/*
-		 	注册org.springframework.context.annotation.internalCommonAnnotationProcessor到beanFactory中
-		 	该后置处理器用来处理java一些通用注解
+		/**
+		 * 注册CommonAnnotationBeanPostProcessor到beanFactory中
+		 * 名字叫org.springframework.context.annotation.internalCommonAnnotationProcessor
+		 * 该后置处理器用来处理java规范的一些通用注解
 		 */
 		if (jsr250Present && !registry.containsBeanDefinition(COMMON_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(CommonAnnotationBeanPostProcessor.class);
@@ -193,9 +196,9 @@ public abstract class AnnotationConfigUtils {
 		}
 
 		// Check for JPA support, and if present add the PersistenceAnnotationBeanPostProcessor.
-		/*
-		 	注册org.springframework.context.annotation.internalPersistenceAnnotationProcessor到beanFactory中
-		 	该后置处理器用来处理持久化的注解
+		/**
+		 * 注册org.springframework.context.annotation.internalPersistenceAnnotationProcessor到beanFactory中
+		 * 该后置处理器用来处理持久化的注解
 		 */
 		if (jpaPresent && !registry.containsBeanDefinition(PERSISTENCE_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition();
@@ -211,8 +214,9 @@ public abstract class AnnotationConfigUtils {
 			beanDefs.add(registerPostProcessor(registry, def, PERSISTENCE_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
 
-		/*
-			注册EventListenerMethodProcessor事件监听的后置处理器
+		/**
+		 *
+			处理监听@EventListener注解的事件监听器EventListenerMethodProcessor
 		 */
 		if (!registry.containsBeanDefinition(EVENT_LISTENER_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(EventListenerMethodProcessor.class);
@@ -220,8 +224,8 @@ public abstract class AnnotationConfigUtils {
 			beanDefs.add(registerPostProcessor(registry, def, EVENT_LISTENER_PROCESSOR_BEAN_NAME));
 		}
 
-		/*
-			DefaultEventListenerFactory 默认事件监听工厂
+		/**
+		 * DefaultEventListenerFactory 默认事件监听工厂
 		 */
 		if (!registry.containsBeanDefinition(EVENT_LISTENER_FACTORY_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(DefaultEventListenerFactory.class);
