@@ -92,9 +92,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
 		// 调用空的构造方法，内部注册五个后置处理器
 		this();
-		// 注册bd
+		// 注册我们的配置类
 		register(componentClasses);
-
+		// IOC容器刷新接口
 		refresh();
 	}
 

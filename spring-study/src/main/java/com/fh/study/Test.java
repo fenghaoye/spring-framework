@@ -12,6 +12,7 @@ public class Test {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		UserService userService = context.getBean(UserService.class);
 		System.out.println(userService);
+		System.out.println("编译成功");
 
 		AutowiredService autowiredService = context.getBean(AutowiredService.class);
 		autowiredService.get();
