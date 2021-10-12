@@ -323,6 +323,9 @@ class ConfigurationClassParser {
 		processImports(configClass, sourceClass, getImports(sourceClass), true);
 
 		// Process any @ImportResource annotations
+		/**
+		 * 处理@ImportResource
+		 */
 		AnnotationAttributes importResource =
 				AnnotationConfigUtils.attributesFor(sourceClass.getMetadata(), ImportResource.class);
 		if (importResource != null) {
@@ -335,6 +338,9 @@ class ConfigurationClassParser {
 		}
 
 		// Process individual @Bean methods
+		/**
+		 * 处理 @Bean methods 获取到我们配置类中所有标注了@Bean的方法
+		 */
 		Set<MethodMetadata> beanMethods = retrieveBeanMethodMetadata(sourceClass);
 		for (MethodMetadata methodMetadata : beanMethods) {
 			configClass.addBeanMethod(new BeanMethod(methodMetadata, configClass));
@@ -574,20 +580,33 @@ class ConfigurationClassParser {
 			this.importStack.push(configClass);
 			try {
 				for (SourceClass candidate : importCandidates) {
+					/**
+					 * @Import(MyImportSelector.class),实现了ImportSelector.接口的类
+					 * 实例化引用的组件，获取类的全限定名，递归调用@Import类，直至解析成普通类
+					 */
 					if (candidate.isAssignable(ImportSelector.class)) {
 						// Candidate class is an ImportSelector -> delegate to it to determine imports
 						Class<?> candidateClass = candidate.loadClass();
+						// 实例化我们的SelectImport组件
 						ImportSelector selector = ParserStrategyUtils.instantiateClass(candidateClass, ImportSelector.class,
 								this.environment, this.resourceLoader, this.registry);
+						// 延迟处理的DeferredImportSelector，暂时不处理
 						if (selector instanceof DeferredImportSelector) {
 							this.deferredImportSelectorHandler.handle(configClass, (DeferredImportSelector) selector);
 						}
 						else {
+							// 调用上面实例化的类的selectImports方法获取类的全限定名。
 							String[] importClassNames = selector.selectImports(currentSourceClass.getMetadata());
+							// 递归解析@Import注解，直至普通类
 							Collection<SourceClass> importSourceClasses = asSourceClasses(importClassNames);
 							processImports(configClass, currentSourceClass, importSourceClasses, false);
 						}
 					}
+					/**
+					 * @Import注解引入的类实现了ImportBeanDefinitionRegistrar接口
+					 * 这里只是解析，不直接调用。
+					 * 实例化这个组件，并添加到importBeanDefinitionRegistrars中。
+					 */
 					else if (candidate.isAssignable(ImportBeanDefinitionRegistrar.class)) {
 						// Candidate class is an ImportBeanDefinitionRegistrar ->
 						// delegate to it to register additional bean definitions
@@ -602,6 +621,9 @@ class ConfigurationClassParser {
 						// process it as an @Configuration class
 						this.importStack.registerImport(
 								currentSourceClass.getMetadata(), candidate.getMetadata().getClassName());
+						/**
+						 * 当成配置类一样去解析，最终把这个普通的类加到configurationClasses
+						 */
 						processConfigurationClass(candidate.asConfigClass(configClass));
 					}
 				}

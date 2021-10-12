@@ -248,6 +248,12 @@ final class PostProcessorRegistrationDelegate {
 
 	}
 
+	/**
+	 * 给我们容器中注册了我们bean的后置处理器，实现了BeanPostProcessor接口
+	 * bean的后置处理器在什么时候进行调用？在bean的各个生命周期中都会进行调用
+	 * @param beanFactory
+	 * @param applicationContext
+	 */
 	public static void registerBeanPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, AbstractApplicationContext applicationContext) {
 

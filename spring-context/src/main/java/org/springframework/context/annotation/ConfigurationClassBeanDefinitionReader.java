@@ -136,15 +136,20 @@ class ConfigurationClassBeanDefinitionReader {
 			this.importRegistry.removeImportingClass(configClass.getMetadata().getClassName());
 			return;
 		}
-
+		//判断我们经过解析的是不是通过@Import导入进来的
 		if (configClass.isImported()) {
 			registerBeanDefinitionForImportedConfigurationClass(configClass);
 		}
+
+		//是不是通过我们的@bean导入进来的组件
 		for (BeanMethod beanMethod : configClass.getBeanMethods()) {
 			loadBeanDefinitionsForBeanMethod(beanMethod);
 		}
 
+		//是不是通过我们的@ImportResources导入进来的
 		loadBeanDefinitionsFromImportedResources(configClass.getImportedResources());
+
+		//是不是通过我们的ImportBeanDefinition注解导入进来的  @Import上的类实现了ImportBeanDefinitionRegistrar
 		loadBeanDefinitionsFromRegistrars(configClass.getImportBeanDefinitionRegistrars());
 	}
 
