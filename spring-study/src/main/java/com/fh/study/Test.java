@@ -25,11 +25,13 @@ public class Test {
 
 		IndexService indexService = (IndexService) context.getBean("indexService");
 		indexService.test();*/
-//
+//     测试import
 //		System.out.println( context.getBean(TestImpostClass.class).toString());
 //		System.out.println( context.getBean(AppConfig.class).toString());
-		System.out.println(context.getBean("myFactoryBean"));
-		System.out.println(context.getBean("&myFactoryBean"));
+
+//		测试factoryBean
+//		System.out.println(context.getBean("myFactoryBean"));
+//		System.out.println(context.getBean("&myFactoryBean"));
 
 	}
 
