@@ -856,11 +856,19 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		for (String beanName : beanNames) {
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
+				/**
+				 * 处理FactoryBean
+				 */
 				if (isFactoryBean(beanName)) {
-					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
 					/**
-					 * 处理factoryBean
-					 */
+					 * 这里会使用@前缀加beanName创建FactoryBean这个对象，放到缓存中
+					 * 但是getObject指定的对象，会在使用的时候才被创建，相当于getObject指定的对象是懒加载的。
+					 *
+					 * 如果我们需要将FactoryBean指定的对象在spring容器启动的时候就加载，有两种方式
+					 * 1、实现SmartFactoryBean，并重写isEagerInit方法，将返回值设置为true
+					 * 2、我们也可以在一个不是懒加载的Bean中注入这个FactoryBean所创建的Bean，Spring在解决依赖关系也会帮我们将这个Bean创建出来
+ 					 */
+					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
 					if (bean instanceof FactoryBean) {
 						final FactoryBean<?> factory = (FactoryBean<?>) bean;
 						boolean isEagerInit;
@@ -874,10 +882,14 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 									((SmartFactoryBean<?>) factory).isEagerInit());
 						}
 						if (isEagerInit) {
+							// 如果是一个SmartFactoryBean并且不是懒加载的，那么调用FactoryBean.getObject方法创建Bean
 							getBean(beanName);
 						}
 					}
 				}
+				/**
+				 * 处理普通Bean
+				 */
 				else {
 					getBean(beanName);
 				}

@@ -249,6 +249,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// Eagerly check singleton cache for manually registered singletons.
 		/**
 		 * 第一次调用getSingleton(beanName)
+		 * 如果是factoryBean对象，那么第一次执行到这里已经可以获取到实际的factoryBean对象了。
 		 */
 		Object sharedInstance = getSingleton(beanName);
 		/**
@@ -265,6 +266,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
 				}
 			}
+			/**
+			 * 如果sharedInstance不是FactoryBean 类型的，则直接返回sharedInstance。
+			 * 但如果sharedInstance 是 FactoryBean 类型的，并且name是以&开头的，也则会直接返回对象。
+			 * 如果FactoryBean，并且name不是以&前缀开头的，则会调用 getObject方法获取真正的bean实例。
+			 * 并放到factoryBeanObjectCache缓存中，不是放在spring的单例池中。
+			 */
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}
 
@@ -1832,6 +1839,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				mbd = getMergedLocalBeanDefinition(beanName);
 			}
 			boolean synthetic = (mbd != null && mbd.isSynthetic());
+			/**
+			 * 调用factoryBean的getObject方法。
+			 */
 			object = getObjectFromFactoryBean(factory, beanName, !synthetic);
 		}
 		return object;

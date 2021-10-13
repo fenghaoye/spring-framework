@@ -14,20 +14,22 @@ public class Test {
 	public static void main(String[] args) {
 
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-		UserService userService = context.getBean(UserService.class);
-		UserService userService2 = context.getBean(UserService.class);
-		System.out.println(userService.getIndexService());
-		System.out.println(userService2.getIndexService());
-		System.out.println("编译成功");
+//		UserService userService = context.getBean(UserService.class);
+//		UserService userService2 = context.getBean(UserService.class);
+//		System.out.println(userService.getIndexService());
+//		System.out.println(userService2.getIndexService());
+//		System.out.println("编译成功");
 
 		/*AutowiredService autowiredService = context.getBean(AutowiredService.class);
 		autowiredService.get();
 
 		IndexService indexService = (IndexService) context.getBean("indexService");
 		indexService.test();*/
-
-		System.out.println( context.getBean(TestImpostClass.class).toString());
-		System.out.println( context.getBean(AppConfig.class).toString());
+//
+//		System.out.println( context.getBean(TestImpostClass.class).toString());
+//		System.out.println( context.getBean(AppConfig.class).toString());
+		System.out.println(context.getBean("myFactoryBean"));
+		System.out.println(context.getBean("&myFactoryBean"));
 
 	}
 
