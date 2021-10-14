@@ -1827,11 +1827,22 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}, getAccessControlContext());
 		}
 		else {
+			/**
+			 * 第一步：执行aware接口中的方法，需要主要的是，不是所有的Aware接口都是在这步执行了。
+			 * 只会有以下三个BeanXXXAware接口的方法会在此执行
+			 * 		BeanNameAware：获取这个bean的名字
+			 * 		BeanClassLoaderAware：获取加载这个bean的类加载器
+			 * 		BeanFactoryAware：获取当前的beanFactory
+ 			 */
 			invokeAwareMethods(beanName, bean);
 		}
 
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
+			/**
+			 * 除了上面三个aware接口的执行，其他的aware接口的方法都会在这一步执行。
+			 * 包括ApplicationContextAware接口，以及@PostConstructor,@PreDestroy注解的处理
+			 */
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 
