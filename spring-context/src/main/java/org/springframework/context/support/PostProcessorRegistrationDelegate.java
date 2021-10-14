@@ -256,42 +256,65 @@ final class PostProcessorRegistrationDelegate {
 	 */
 	public static void registerBeanPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, AbstractApplicationContext applicationContext) {
-
+		// 获取已经注册成beanDefinition的后置处理器
 		String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);
 
 		// Register BeanPostProcessorChecker that logs an info message when
 		// a bean is created during BeanPostProcessor instantiation, i.e. when
 		// a bean is not eligible for getting processed by all BeanPostProcessors.
+		/**
+		 * bean的后置处理器的个数
+		 * 		beanFactory.getBeanPostProcessorCount()成品的个数 之前refresh-->prepareBeanFactory()中注册的
+		 * 		程序员自定义的，在ConfigurationClassBeanFactoryPostProcessor通过bean扫描出来的。
+		 * postProcessorNames.length  beanFactory工厂中bean定义的个数
+		 * +1 在后面又马上注册了BeanPostProcessorChecker的后置处理器
+		 */
 		int beanProcessorTargetCount = beanFactory.getBeanPostProcessorCount() + 1 + postProcessorNames.length;
 		beanFactory.addBeanPostProcessor(new BeanPostProcessorChecker(beanFactory, beanProcessorTargetCount));
 
 		// Separate between BeanPostProcessors that implement PriorityOrdered,
 		// Ordered, and the rest.
+		// 实现了priorityOrdered接口的后置处理器
 		List<BeanPostProcessor> priorityOrderedPostProcessors = new ArrayList<>();
+		// 系统内部的后置处理器
 		List<BeanPostProcessor> internalPostProcessors = new ArrayList<>();
+		// 实现了ordered接口的后置处理器
 		List<String> orderedPostProcessorNames = new ArrayList<>();
+		// 没有实现排序接口的后置处理器
 		List<String> nonOrderedPostProcessorNames = new ArrayList<>();
 		for (String ppName : postProcessorNames) {
+			// 若实现了PriorityOrdered接口的
 			if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
+				// 显示的创建后置处理器对象
 				BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
 				priorityOrderedPostProcessors.add(pp);
+				// 如果实现了MergedBeanDefinitionPostProcessor，添加到内置的list中
 				if (pp instanceof MergedBeanDefinitionPostProcessor) {
 					internalPostProcessors.add(pp);
 				}
 			}
+			// 若实现了Ordered接口的
 			else if (beanFactory.isTypeMatch(ppName, Ordered.class)) {
 				orderedPostProcessorNames.add(ppName);
 			}
+			// 没有实现排序接口的
 			else {
 				nonOrderedPostProcessorNames.add(ppName);
 			}
 		}
 
 		// First, register the BeanPostProcessors that implement PriorityOrdered.
+		/**
+		 * 实现了PriorityOrdered的后置处理器排序，并添加到容器中
+		 */
 		sortPostProcessors(priorityOrderedPostProcessors, beanFactory);
 		registerBeanPostProcessors(beanFactory, priorityOrderedPostProcessors);
 
 		// Next, register the BeanPostProcessors that implement Ordered.
+		/**
+		 * 实现了Ordered的后置处理器排序，并添加到容器中
+		 * 如果实现了MergedBeanDefinitionPostProcessor接口，添加到内置的list中
+		 */
 		List<BeanPostProcessor> orderedPostProcessors = new ArrayList<>(orderedPostProcessorNames.size());
 		for (String ppName : orderedPostProcessorNames) {
 			BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
@@ -304,6 +327,10 @@ final class PostProcessorRegistrationDelegate {
 		registerBeanPostProcessors(beanFactory, orderedPostProcessors);
 
 		// Now, register all regular BeanPostProcessors.
+		/**
+		 * 未实现排序接口的后置处理器添加到容器中
+		 * 如果实现了MergedBeanDefinitionPostProcessor接口，添加到内置的list中
+		 */
 		List<BeanPostProcessor> nonOrderedPostProcessors = new ArrayList<>(nonOrderedPostProcessorNames.size());
 		for (String ppName : nonOrderedPostProcessorNames) {
 			BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
@@ -315,6 +342,9 @@ final class PostProcessorRegistrationDelegate {
 		registerBeanPostProcessors(beanFactory, nonOrderedPostProcessors);
 
 		// Finally, re-register all internal BeanPostProcessors.
+		/**
+		 * 内置的后置处理器进行排序，最后添加到容器中
+		 */
 		sortPostProcessors(internalPostProcessors, beanFactory);
 		registerBeanPostProcessors(beanFactory, internalPostProcessors);
 
