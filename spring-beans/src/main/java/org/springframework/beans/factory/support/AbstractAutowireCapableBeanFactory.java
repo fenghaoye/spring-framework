@@ -1842,11 +1842,16 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			/**
 			 * 除了上面三个aware接口的执行，其他的aware接口的方法都会在这一步执行。
 			 * 包括ApplicationContextAware接口，以及@PostConstructor,@PreDestroy注解的处理
+			 * 每一个bean获取到的后置处理器个数都可能不一样
 			 */
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 
 		try {
+			/**
+			 * 先判断是否实现了对应的生命周期回调的接口（InitializingBean），如果实现了接口，调用接口中的afterPropertiesSet方法。
+			 * 再判断是否提供了initMethod，也就是在XML中的Bean标签中提供了init-method属性。
+			 */
 			invokeInitMethods(beanName, wrappedBean, mbd);
 		}
 		catch (Throwable ex) {
@@ -1855,6 +1860,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					beanName, "Invocation of init method failed", ex);
 		}
 		if (mbd == null || !mbd.isSynthetic()) {
+			/**
+			 * 完成aop代理
+			 */
 			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
 		}
 
@@ -1893,6 +1901,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	protected void invokeInitMethods(String beanName, final Object bean, @Nullable RootBeanDefinition mbd)
 			throws Throwable {
 
+		// 判断是否实现了对应的生命周期回调的接口（InitializingBean），如果实现了接口，调用接口中的afterPropertiesSet方法。
 		boolean isInitializingBean = (bean instanceof InitializingBean);
 		if (isInitializingBean && (mbd == null || !mbd.isExternallyManagedInitMethod("afterPropertiesSet"))) {
 			if (logger.isTraceEnabled()) {
@@ -1914,6 +1923,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
+		// 判断是否提供了initMethod，也就是在XML中的Bean标签中提供了init-method属性。
 		if (mbd != null && bean.getClass() != NullBean.class) {
 			String initMethodName = mbd.getInitMethodName();
 			if (StringUtils.hasLength(initMethodName) &&
