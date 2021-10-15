@@ -88,8 +88,11 @@ public class AnnotatedBeanDefinitionReader {
 		// 用户处理条件注解 @Conditional
 		this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);
 		/**
-		 * 解析配置类的后置处理器
-		 * 解析@Autowired的处理器
+		 * 一个解析配置类的beanFactory的后置处理器  ConfigurationClassPostProcessor
+		 * 三个bean的后置处理器
+		 * 		解析@Autowired的处理器  AutowiredAnnotationBeanPostProcessor
+		 * 		处理JSR规范的注解处理器  CommonAnnotationBeanPostProcessor
+		 * 		处理持久化的注解处理器	PersistenceAnnotationBeanPostProcessor
 		 * 注解监听事件解析器，监听器工厂
  		 */
 		AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);

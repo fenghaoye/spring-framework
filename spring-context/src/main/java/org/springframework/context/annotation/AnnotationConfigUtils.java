@@ -162,9 +162,10 @@ public abstract class AnnotationConfigUtils {
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 
 		/**
+		 * beanFactoryPostProcessor
 		 * 注册ConfigurationClassPostProcessor到beanFactory中
 		 * 名字叫org.springframework.context.annotation.internalConfigurationAnnotationProcessor
-		 * 该后置处理器用来解析配置类
+		 * 该beanFactory后置处理器用来解析配置类
 		 */
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
@@ -173,6 +174,7 @@ public abstract class AnnotationConfigUtils {
 		}
 
 		/**
+		 * MergedBeanDefinitionPostProcessor implements BeanPostProcessor
 		 * 注册到AutowiredAnnotationBeanPostProcessor到beanFactory中
 		 * 名字叫org.springframework.context.annotation.internalAutowiredAnnotationProcessor
 		 * 该后置处理器用来处理@Autowired注解
