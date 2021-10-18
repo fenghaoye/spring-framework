@@ -2,7 +2,7 @@ package com.fh.study.beanpostprocessor;
 
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class TestBeanPostProcessor2 {
 
 	public TestBeanPostProcessor2() {

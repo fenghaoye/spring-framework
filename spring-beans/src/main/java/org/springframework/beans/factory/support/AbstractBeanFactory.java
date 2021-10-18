@@ -250,6 +250,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		/**
 		 * 第一次调用getSingleton(beanName)
 		 * 如果是factoryBean对象，那么第一次执行到这里已经可以获取到实际的factoryBean对象了。
+		 * 放在spring单例池中，是以beanName存放的，而不是&beanName
 		 */
 		Object sharedInstance = getSingleton(beanName);
 		/**
@@ -354,6 +355,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 							throw ex;
 						}
 					});
+					/**
+					 * 如果是factoryBean，并且name不是以&开头的，调用getObject方法获取实际的bean
+					 */
 					bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
 				}
 

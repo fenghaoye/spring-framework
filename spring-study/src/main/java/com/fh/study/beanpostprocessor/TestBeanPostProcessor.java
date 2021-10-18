@@ -3,7 +3,7 @@ package com.fh.study.beanpostprocessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class TestBeanPostProcessor {
 
 	@Autowired

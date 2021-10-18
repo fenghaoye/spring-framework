@@ -508,7 +508,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
-			// 判断这个类在之后是否需要进行AOP代理
+			/**
+			 * 第一次执行后置处理器
+			 * 解析我们的aop切面信息进行缓存
+			 */
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;

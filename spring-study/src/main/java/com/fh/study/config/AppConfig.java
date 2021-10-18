@@ -11,17 +11,17 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
 
-	@Bean
-	public IndexService getIndexService(){
-		IndexService indexService = new IndexService();
-		System.out.println("调用getIndexService方法");
-		return indexService;
-	}
-
-	@Bean
-	public UserService getUserService(){
-		UserService userService = new UserService();
-		userService.setIndexService(getIndexService());
-		return userService;
-	}
+//	@Bean
+//	public IndexService getIndexService(){
+//		IndexService indexService = new IndexService();
+//		System.out.println("调用getIndexService方法");
+//		return indexService;
+//	}
+//
+//	@Bean
+//	public UserService getUserService(){
+//		UserService userService = new UserService();
+////		userService.setIndexService(getIndexService());
+//		return userService;
+//	}
 }

@@ -14,7 +14,8 @@ public class Test {
 	public static void main(String[] args) {
 
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-//		UserService userService = context.getBean(UserService.class);
+		UserService userService = context.getBean(UserService.class);
+		userService.gettestFactoryBean();
 //		UserService userService2 = context.getBean(UserService.class);
 //		System.out.println(userService.getIndexService());
 //		System.out.println(userService2.getIndexService());

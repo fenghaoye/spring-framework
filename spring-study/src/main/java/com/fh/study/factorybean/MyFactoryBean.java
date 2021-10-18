@@ -3,7 +3,7 @@ package com.fh.study.factorybean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.stereotype.Component;
 
-//@Component
+@Component
 public class MyFactoryBean implements FactoryBean<TestFactoryBean> {
 	@Override
 	public TestFactoryBean getObject() throws Exception {
